@@ -158,10 +158,6 @@ void StreamSocket_Read( SOCKET StreamSocket )
 				TargetSocket_Close( StreamSocket );
 				return;
 			}
-			else
-			{
-				break;
-			}
 		}
 
 		if(SizeRecv == 0)
@@ -190,10 +186,6 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			{
 				TargetSocket_Close( StreamSocket );
 				return;
-			}
-			else
-			{
-				break;
 			}
 		}
 
