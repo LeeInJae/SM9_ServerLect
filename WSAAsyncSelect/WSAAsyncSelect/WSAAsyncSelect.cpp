@@ -189,12 +189,6 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			}
 		}
 
-		if(SizeSend == 0 || SizeSend == SOCKET_ERROR)
-		{
-			//cout << "Send End" << endl;
-			break;
-		}
-
 		TotalSizeSend += SizeSend;
 		if(TotalSizeSend >= TotalSizeRecv)
 		{
