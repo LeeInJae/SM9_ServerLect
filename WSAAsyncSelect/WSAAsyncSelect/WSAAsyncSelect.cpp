@@ -168,11 +168,9 @@ void StreamSocket_Read( SOCKET StreamSocket )
 		TotalSizeRecv += SizeRecv;
 	}
 
-	//Question : tcp 통신이므로 while로 eof일때까지 보내야 하는 것 아닌가?
 	while(1)
 	{
-		//Question : Send가 계속들어오네...뭐지?
-		//Anwer : Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
+		//Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
 		int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
 
 		if(SizeSend == 0 || SizeSend == SOCKET_ERROR)
