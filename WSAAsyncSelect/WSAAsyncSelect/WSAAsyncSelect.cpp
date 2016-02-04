@@ -158,19 +158,18 @@ void StreamSocket_Read( SOCKET StreamSocket )
 				TargetSocket_Close( StreamSocket );
 				return;
 			}
+			else
+			{
+				break;
+			}
 		}
 
 		if(SizeRecv == 0)
 		{
 			//Gracefuly Close
-			Buff[ TotalSizeRecv ] = '\0';
-			break;
-		}
-		else if(SizeRecv == SOCKET_ERROR)
-		{
-			Buff[ TotalSizeRecv ] = '\0';
-			//cout << "Recv End" << endl;
-			break;
+			cout << "정장 종료요~~" << endl;
+			TargetSocket_Close( StreamSocket );
+			return;
 		}
 
 		TotalSizeRecv += SizeRecv;
@@ -186,6 +185,10 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			{
 				TargetSocket_Close( StreamSocket );
 				return;
+			}
+			else
+			{
+				break;
 			}
 		}
 
