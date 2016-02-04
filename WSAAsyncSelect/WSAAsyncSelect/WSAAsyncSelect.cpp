@@ -89,7 +89,6 @@ void ProcessSocketIO( HWND hWnd , WPARAM wParam , LPARAM lParam )
 {
 	SOCKET TargetSocket = static_cast< SOCKET >( wParam );
 
-
 	switch(WSAGETSELECTEVENT( lParam ))
 	{
 	case FD_ACCEPT:
@@ -151,6 +150,19 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	while(1)
 	{
 		int SizeRecv = recv( StreamSocket , Buff , BUFF_SIZE , NULL );
+		
+		if(SizeRecv == SOCKET_ERROR)
+		{
+			if(WSAGetLastError( ) != WSAEWOULDBLOCK)
+			{
+				TargetSocket_Close( StreamSocket );
+				return;
+			}
+			else
+			{
+				break;
+			}
+		}
 
 		if(SizeRecv == 0)
 		{
@@ -172,6 +184,18 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	{
 		//Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
 		int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
+		if(SizeSend == SOCKET_ERROR)
+		{
+			if(WSAGetLastError( ) != WSAEWOULDBLOCK)
+			{
+				TargetSocket_Close( StreamSocket );
+				return;
+			}
+			else
+			{
+				break;
+			}
+		}
 
 		if(SizeSend == 0 || SizeSend == SOCKET_ERROR)
 		{
