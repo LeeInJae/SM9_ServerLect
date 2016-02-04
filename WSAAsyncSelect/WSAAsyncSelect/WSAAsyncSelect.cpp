@@ -74,7 +74,7 @@ LRESULT CALLBACK WndProc( HWND hWnd , UINT uMsg , WPARAM wParam , LPARAM lParam 
 	switch(uMsg)
 	{
 	case WM_SOCKET:
-		ProcessSocketIO( hWnd, wParam, lParam );
+		ProcessSocketIO( hWnd , wParam , lParam );
 		break;
 	case WM_DESTROY:
 		PostQuitMessage( 0 );
@@ -88,12 +88,12 @@ LRESULT CALLBACK WndProc( HWND hWnd , UINT uMsg , WPARAM wParam , LPARAM lParam 
 void ProcessSocketIO( HWND hWnd , WPARAM wParam , LPARAM lParam )
 {
 	SOCKET TargetSocket = static_cast< SOCKET >( wParam );
-	
+
 
 	switch(WSAGETSELECTEVENT( lParam ))
 	{
 	case FD_ACCEPT:
-		ServerSocket_Accept( TargetSocket, hWnd );
+		ServerSocket_Accept( TargetSocket , hWnd );
 		break;
 	case FD_READ:
 		StreamSocket_Read( TargetSocket );
@@ -101,17 +101,20 @@ void ProcessSocketIO( HWND hWnd , WPARAM wParam , LPARAM lParam )
 	case FD_WRITE:
 		StreamSocket_Write( TargetSocket );
 		break;
+	case FD_CLOSE:
+		TargetSocket_Close( TargetSocket );
+		break;
 	default:
 		break;
 	}
 }
 
-void ServerSocket_Accept( SOCKET ServerSocket, HWND hWnd )
+void ServerSocket_Accept( SOCKET ServerSocket , HWND hWnd )
 {
 	SOCKADDR_IN ClientAddr;
 	int SizeClientAddr = sizeof( ClientAddr );
 	memset( &ClientAddr , 0 , SizeClientAddr );
-	
+
 	SOCKET StreamSocket = accept( ServerSocket , ( SOCKADDR* )&ClientAddr , &SizeClientAddr );
 	WCHAR AddressString[ BUFF_SIZE + 1 ];
 	DWORD SizeAdressString = BUFF_SIZE;
@@ -132,7 +135,7 @@ void ServerSocket_Accept( SOCKET ServerSocket, HWND hWnd )
 		return;
 	}
 
-	if(WSAAsyncSelect( StreamSocket , hWnd , WM_SOCKET , FD_READ|FD_WRITE ) == SOCKET_ERROR)
+	if(WSAAsyncSelect( StreamSocket , hWnd , WM_SOCKET , FD_READ | FD_WRITE | FD_CLOSE ) == SOCKET_ERROR)
 	{
 		cout << "Stream Socket WSAAsyncSelect Error" << endl;
 		return;
@@ -148,7 +151,7 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	while(1)
 	{
 		int SizeRecv = recv( StreamSocket , Buff , BUFF_SIZE , NULL );
-		
+
 		if(SizeRecv == 0)
 		{
 			//Gracefuly Close
@@ -161,7 +164,7 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			//cout << "Recv End" << endl;
 			break;
 		}
-		
+
 		TotalSizeRecv += SizeRecv;
 	}
 
@@ -169,8 +172,9 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	while(1)
 	{
 		//Question : Send가 계속들어오네...뭐지?
-		int SizeSend = send( StreamSocket , Buff , TotalSizeRecv, NULL );
-		
+		//Anwer : Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
+		int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
+
 		if(SizeSend == 0 || SizeSend == SOCKET_ERROR)
 		{
 			//cout << "Send End" << endl;
@@ -196,31 +200,35 @@ void StreamSocket_Write( SOCKET StreamSocket )
 	//
 }
 
+void TargetSocket_Close( SOCKET TargetSocket )
+{
+	closesocket( TargetSocket );
+}
 HWND GetWindowHandle( )
 {
 	WNDCLASS wndclass;
-	wndclass.cbClsExtra			= 0;
-	wndclass.cbWndExtra			= 0;
-	wndclass.hbrBackground		= ( HBRUSH )GetStockObject( WHITE_BRUSH );
-	wndclass.hCursor			= LoadCursor( NULL , IDC_ARROW );
-	wndclass.hIcon				= LoadIcon( NULL , IDI_APPLICATION );
-	wndclass.hInstance			= NULL;
-	wndclass.lpfnWndProc		= ( WNDPROC )WndProc;
-	wndclass.lpszClassName		= L"MyWindowClass";
-	wndclass.lpszMenuName		= NULL;
-	wndclass.style				= CS_HREDRAW | CS_VREDRAW;
+	wndclass.cbClsExtra = 0;
+	wndclass.cbWndExtra = 0;
+	wndclass.hbrBackground = ( HBRUSH )GetStockObject( WHITE_BRUSH );
+	wndclass.hCursor = LoadCursor( NULL , IDC_ARROW );
+	wndclass.hIcon = LoadIcon( NULL , IDI_APPLICATION );
+	wndclass.hInstance = NULL;
+	wndclass.lpfnWndProc = ( WNDPROC )WndProc;
+	wndclass.lpszClassName = L"MyWindowClass";
+	wndclass.lpszMenuName = NULL;
+	wndclass.style = CS_HREDRAW | CS_VREDRAW;
 
-	if(RegisterClass( &wndclass ) == 0) 
-		return (HWND)(nullptr);
+	if(RegisterClass( &wndclass ) == 0)
+		return ( HWND )( nullptr );
 
 	HWND hWnd = CreateWindow( L"MyWindowClass" , L"TCP 서버" , WS_OVERLAPPEDWINDOW , 0 , 0 , 600 , 300 , NULL , ( HMENU )NULL , NULL , NULL );
-	if(hWnd	!= NULL)
+	if(hWnd != NULL)
 	{
 		ShowWindow( hWnd , SW_SHOWNORMAL );
 		UpdateWindow( hWnd );
-		
+
 		return hWnd;
 	}
-	
+
 	return ( HWND )( nullptr );
 }
