@@ -147,62 +147,38 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	char Buff[ BUFF_SIZE + 1 ];
 
 	//Question : tcp 통신이므로 while로 eof일때까지 받아야 하는 것 아닌가?
-	while(1)
-	{
-		int SizeRecv = recv( StreamSocket , Buff , BUFF_SIZE , NULL );
-		
-		if(SizeRecv == SOCKET_ERROR)
-		{
-			if(WSAGetLastError( ) != WSAEWOULDBLOCK)
-			{
-				TargetSocket_Close( StreamSocket );
-				return;
-			}
-			else
-			{
-				break;
-			}
-		}
 
-		if(SizeRecv == 0)
+	int SizeRecv = recv( StreamSocket , Buff , BUFF_SIZE , NULL );
+	
+	if(SizeRecv == SOCKET_ERROR)
+	{
+		if(WSAGetLastError( ) != WSAEWOULDBLOCK)
 		{
-			//Gracefuly Close
-			cout << "정장 종료요~~" << endl;
 			TargetSocket_Close( StreamSocket );
 			return;
 		}
-
-		TotalSizeRecv += SizeRecv;
 	}
 
-	while(1)
+	if(SizeRecv == 0)
 	{
-		//Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
-		int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
-		if(SizeSend == SOCKET_ERROR)
-		{
-			if(WSAGetLastError( ) != WSAEWOULDBLOCK)
-			{
-				TargetSocket_Close( StreamSocket );
-				return;
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		TotalSizeSend += SizeSend;
-		if(TotalSizeSend >= TotalSizeRecv)
-		{
-			//cout << "Send End" << endl;
-			break;
-		}
+		//Gracefuly Close
+		cout << "정상 종료요~~" << endl;
+		TargetSocket_Close( StreamSocket );
+		return;
 	}
 
-	if(TotalSizeRecv != TotalSizeSend)
+	TotalSizeRecv += SizeRecv;
+	
+	
+	//Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
+	int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
+	if(SizeSend == SOCKET_ERROR)
 	{
-		cout << "Echo Error" << endl;
+		if(WSAGetLastError( ) != WSAEWOULDBLOCK)
+		{
+			TargetSocket_Close( StreamSocket );
+			return;
+		}
 	}
 }
 
