@@ -146,8 +146,7 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	int TotalSizeRecv = 0 , TotalSizeSend = 0;
 	char Buff[ BUFF_SIZE + 1 ];
 
-	//Question : tcp 통신이므로 while로 eof일때까지 받아야 하는 것 아닌가?
-
+	//Question : tcp 통신이므로 while로 수신버퍼가 빌 때까지 받아야 하는 것 아닌가?
 	int SizeRecv = recv( StreamSocket , Buff , BUFF_SIZE , NULL );
 	
 	if(SizeRecv == SOCKET_ERROR)
@@ -170,7 +169,9 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	TotalSizeRecv += SizeRecv;
 	
 	
-	//Buff에 계속 채우고 있으니까 그렇지요~~계속 보내는거지 Buff에 있는걸
+	//Question: 만약에 send가 실패해서 Data를 보낼 수 없다면, 이 에코데이터는 클라이언트에서 못받을 수 있는것아닌가?
+	//성공할때까지 보내야 하는 것아닌가?
+	//그러면 계속 성공할때까지 기다린다면, 부하로 작동할 것이고 어떠한 이유로 영영 보내지 못하면 서버는 더이상 제할일 못하고 죽는 것 아닌가?
 	int SizeSend = send( StreamSocket , Buff , TotalSizeRecv , NULL );
 	if(SizeSend == SOCKET_ERROR)
 	{
@@ -184,7 +185,7 @@ void StreamSocket_Read( SOCKET StreamSocket )
 
 void StreamSocket_Write( SOCKET StreamSocket )
 {
-	//
+	//Question : 정령 Write에서는 아무것도 해줄 필요가없는가?
 }
 
 void TargetSocket_Close( SOCKET TargetSocket )
