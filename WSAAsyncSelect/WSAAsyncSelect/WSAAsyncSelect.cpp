@@ -157,7 +157,7 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			return;
 		}
 	}
-
+	fd_set
 	if(SizeRecv == 0)
 	{
 		//Gracefuly Close
@@ -167,8 +167,8 @@ void StreamSocket_Read( SOCKET StreamSocket )
 	}
 
 	TotalSizeRecv += SizeRecv;
-	
-	
+	select
+	ioctlsocket
 	//Question: 만약에 send가 실패해서 Data를 보낼 수 없다면, 이 에코데이터는 클라이언트에서 못받을 수 있는것아닌가?
 	//성공할때까지 보내야 하는 것아닌가?
 	//그러면 계속 성공할때까지 기다린다면, 부하로 작동할 것이고 어떠한 이유로 영영 보내지 못하면 서버는 더이상 제할일 못하고 죽는 것 아닌가?
@@ -181,6 +181,10 @@ void StreamSocket_Read( SOCKET StreamSocket )
 			return;
 		}
 	}
+	
+	SOCKET Socket	= socket( AF_INET , SOCK_STREAM , IPPROTO_TCP );
+	int Optval		= true;
+	setsockopt( Socket , IPPROTO_TCP , TCP_NODELAY , ( const char )&Optval , sizeof(SizeOptVal) );
 }
 
 void StreamSocket_Write( SOCKET StreamSocket )

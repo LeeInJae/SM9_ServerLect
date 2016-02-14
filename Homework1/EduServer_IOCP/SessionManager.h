@@ -8,7 +8,8 @@ class ClientSession;
 class SessionManager
 {
 public:
-	SessionManager() : mCurrentConnectionCount(0)	{}
+	SessionManager( ) : mCurrentConnectionCount( 0 )	{ InitializeCriticalSection( &mLock ); }
+	~SessionManager( ) { DeleteCriticalSection( &mLock ); }
 
 	ClientSession* CreateClientSession(SOCKET sock);
 

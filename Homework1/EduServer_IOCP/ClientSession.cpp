@@ -7,8 +7,9 @@
 
 bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 {
+	//Question : 왜 LOCK?? 
 	//TODO: 이 영역 lock으로 보호 할 것
-
+	EnterCriticalSection( &mLock );
 	CRASH_ASSERT(LThreadType == THREAD_MAIN_ACCEPT);
 
 	/// make socket non-blocking
@@ -25,8 +26,8 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 		printf_s("[DEBUG] SO_RCVBUF change error: %d\n", GetLastError()) ;
 		return false;
 	}
-	
-	HANDLE handle = 0; //TODO: 여기에서 CreateIoCompletionPort((HANDLE)mSocket, ...);사용하여 연결할 것
+
+	HANDLE handle = CreateIoCompletionPort( (HANDLE)mSocket, GIocpManager->GetComletionPort(), (ULONG_PTR)this, 0); //TODO: 여기에서 CreateIoCompletionPort((HANDLE)mSocket, ...);사용하여 연결할 것
 	if (handle != GIocpManager->GetComletionPort())
 	{
 		printf_s("[DEBUG] CreateIoCompletionPort error: %d\n", GetLastError());
@@ -39,14 +40,18 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 	printf_s("[DEBUG] Client Connected: IP=%s, PORT=%d\n", inet_ntoa(mClientAddr.sin_addr), ntohs(mClientAddr.sin_port));
 
 	GSessionManager->IncreaseConnectionCount();
+	LeaveCriticalSection( &mLock );
 
 	return PostRecv() ;
+
+	
 }
 
 void ClientSession::Disconnect(DisconnectReason dr)
 {
 	//TODO: 이 영역 lock으로 보호할 것
-
+	//Question : 왜 LOCK?? 
+	EnterCriticalSection( &mLock );
 	if ( !IsConnected() )
 		return ;
 	
@@ -67,6 +72,7 @@ void ClientSession::Disconnect(DisconnectReason dr)
 	closesocket(mSocket) ;
 
 	mConnected = false ;
+	LeaveCriticalSection( &mLock );
 }
 
 bool ClientSession::PostRecv() const
@@ -74,10 +80,21 @@ bool ClientSession::PostRecv() const
 	if (!IsConnected())
 		return false;
 
-	OverlappedIOContext* recvContext = new OverlappedIOContext(this, IO_RECV);
-
+	OverlappedIOContext* recvContext	= new OverlappedIOContext(this, IO_RECV);
+	recvContext->mSessionObject			= this;
+	recvContext->mWsaBuf.buf			= recvContext->mBuffer;
+	recvContext->mWsaBuf.len			= sizeof( recvContext->mBuffer );
 	//TODO: WSARecv 사용하여 구현할 것
+	DWORD recvBytes = 0 , recvFlag = 0;
+	if ( WSARecv( mSocket , &( recvContext->mWsaBuf ) , 1 , &recvBytes , &recvFlag , &( recvContext->mOverlapped ) , NULL ) == SOCKET_ERROR )
+	{
+		if ( WSAGetLastError( ) != WSA_IO_PENDING )
+		{
+			printf_s( "PostRecv Error\n" );
 
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -91,9 +108,17 @@ bool ClientSession::PostSend(const char* buf, int len) const
 
 	/// copy for echoing back..
 	memcpy_s(sendContext->mBuffer, BUFSIZE, buf, len);
-
+	sendContext->mWsaBuf.buf	= sendContext->mBuffer;
+	sendContext->mWsaBuf.len	= len;
+	sendContext->mSessionObject = this;
 	//TODO: WSASend 사용하여 구현할 것
+	DWORD sendBytes = 0 , sendFlag = 0;
+	if ( WSASend( mSocket , &( sendContext->mWsaBuf ) , 1 , &sendBytes , sendFlag , &( sendContext->mOverlapped ) , NULL ) == SOCKET_ERROR )
+	{
+		printf_s( "WSASend Error\n" );
 
+		return false;
+	}
 
 	return true;
 }

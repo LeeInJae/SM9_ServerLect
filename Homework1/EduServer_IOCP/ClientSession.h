@@ -47,9 +47,10 @@ public:
 		: mSocket(sock), mConnected(false)
 	{
 		memset(&mClientAddr, 0, sizeof(SOCKADDR_IN)) ;
+		InitializeCriticalSection( &mLock );
 	}
 
-	~ClientSession() {}
+	~ClientSession( ) { DeleteCriticalSection( &mLock ); }
 
 	bool	OnConnect(SOCKADDR_IN* addr);
 	bool	IsConnected() const { return mConnected; }
@@ -66,7 +67,7 @@ private:
 	SOCKADDR_IN		mClientAddr ;
 		
 	//TODO: mLock; 선언할 것
-
+	CRITICAL_SECTION mLock;
 	friend class SessionManager;
 } ;
 

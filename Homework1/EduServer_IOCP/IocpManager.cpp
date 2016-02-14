@@ -137,7 +137,7 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 		OverlappedIOContext* context = nullptr;
 		ClientSession* asCompletionKey = nullptr;
 
-//		int ret = GetQueuedCompletionStatus(hCompletionPort, &dwTransferred, , ; ///<여기에는 GetQueuedCompletionStatus(hComletionPort, ..., GQCS_TIMEOUT)를 수행한 결과값을 대입
+		int ret = GetQueuedCompletionStatus(hCompletionPort, &dwTransferred, (ULONG_PTR*)&asCompletionKey, (LPOVERLAPPED*)&context, GQCS_TIMEOUT)  ; ///<여기에는 GetQueuedCompletionStatus(hComletionPort, ..., GQCS_TIMEOUT)를 수행한 결과값을 대입
 
 		/// check time out first 
 		if (ret == 0 && GetLastError()==WAIT_TIMEOUT)
@@ -152,8 +152,11 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 		}
 
 		// if (nullptr == context) 인 경우 처리
-		//{
-		//}
+		if (nullptr == context)
+		{
+			printf_s( "not dequeue completion packet\n" );
+			continue;
+		}
 
 		bool completionOk = true;
 		switch (context->mIoType)
@@ -185,9 +188,10 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 
 bool IocpManager::ReceiveCompletion(const ClientSession* client, OverlappedIOContext* context, DWORD dwTransferred)
 {
-
 	/// echo back 처리 client->PostSend()사용.
-	
+	if (client != nullptr && context != nullptr)
+		client->PostSend( context->mWsaBuf.buf , dwTransferred );
+
 	delete context;
 
 	return client->PostRecv();
@@ -196,7 +200,10 @@ bool IocpManager::ReceiveCompletion(const ClientSession* client, OverlappedIOCon
 bool IocpManager::SendCompletion(const ClientSession* client, OverlappedIOContext* context, DWORD dwTransferred)
 {
 	/// 전송 다 되었는지 확인하는 것 처리..
-	//if (context->mWsaBuf.len != dwTransferred) {...}
+	if (client != nullptr && context != nullptr && context->mWsaBuf.len != dwTransferred) 
+	{
+		return false;
+	}
 	
 	delete context;
 	return true;
