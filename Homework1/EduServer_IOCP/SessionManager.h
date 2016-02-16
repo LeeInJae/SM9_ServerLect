@@ -8,8 +8,10 @@ class ClientSession;
 class SessionManager
 {
 public:
-	SessionManager( ) : mCurrentConnectionCount( 0 )	{ InitializeCriticalSection( &mLock ); }
-	~SessionManager( ) { DeleteCriticalSection( &mLock ); }
+	SessionManager( ) : mCurrentConnectionCount( 0 )	{ //InitializeCriticalSection( &mLock ); 
+	}
+	~SessionManager( ) { //DeleteCriticalSection( &mLock ); 
+	}
 
 	ClientSession* CreateClientSession(SOCKET sock);
 
@@ -24,7 +26,8 @@ private:
 	ClientList	mClientList;
 
 	//TODO: mLock; ¼±¾ð
-	CRITICAL_SECTION mLock;
+	//CRITICAL_SECTION mLock;
+	FastSpinlock	mLock;
 	volatile long mCurrentConnectionCount;
 };
 

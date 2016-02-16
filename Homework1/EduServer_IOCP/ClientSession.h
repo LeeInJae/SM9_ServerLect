@@ -1,9 +1,10 @@
 #pragma once
-
+#include "FastSpinlock.h"
 #define BUFSIZE	4096
 
 class ClientSession ;
 class SessionManager;
+class FastSpinlock;
 
 enum IOType
 {
@@ -47,10 +48,12 @@ public:
 		: mSocket(sock), mConnected(false)
 	{
 		memset(&mClientAddr, 0, sizeof(SOCKADDR_IN)) ;
-		InitializeCriticalSection( &mLock );
+		//InitializeCriticalSection( &mLock );
 	}
 
-	~ClientSession( ) { DeleteCriticalSection( &mLock ); }
+	~ClientSession( ) { 
+		//DeleteCriticalSection( &mLock ); 
+	}
 
 	bool	OnConnect(SOCKADDR_IN* addr);
 	bool	IsConnected() const { return mConnected; }
@@ -67,7 +70,9 @@ private:
 	SOCKADDR_IN		mClientAddr ;
 		
 	//TODO: mLock; 선언할 것
-	CRITICAL_SECTION mLock;
+	//CRITICAL_SECTION mLock;
+	FastSpinlock	mLock;
+
 	friend class SessionManager;
 } ;
 
