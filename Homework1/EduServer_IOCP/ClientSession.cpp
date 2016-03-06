@@ -9,7 +9,6 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 {
 	//Question : 왜 LOCK?? 
 	//TODO: 이 영역 lock으로 보호 할 것
-	//EnterCriticalSection( &mLock );
 	FastSpinlockGuard EnterLock( mLock );
 	CRASH_ASSERT(LThreadType == THREAD_MAIN_ACCEPT);
 
@@ -41,11 +40,8 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 	printf_s("[DEBUG] Client Connected: IP=%s, PORT=%d\n", inet_ntoa(mClientAddr.sin_addr), ntohs(mClientAddr.sin_port));
 
 	GSessionManager->IncreaseConnectionCount();
-	//LeaveCriticalSection( &mLock );
-
-	return PostRecv() ;
-
 	
+	return PostRecv() ;
 }
 
 void ClientSession::Disconnect(DisconnectReason dr)
