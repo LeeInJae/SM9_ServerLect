@@ -14,6 +14,8 @@ FastSpinlock::~FastSpinlock()
 
 void FastSpinlock::EnterLock()
 {
+	//Question : Timer의 해상도?
+	//Sleepfunction의 정밀도를 높이기 위하여?
 	for (int nloops = 0; ; nloops++)
 	{
 		if ( InterlockedExchange(&mLockFlag, 1) == 0 )
