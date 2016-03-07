@@ -23,11 +23,12 @@ ClientSession* SessionManager::CreateClientSession(SOCKET sock)
 void SessionManager::DeleteClientSession(ClientSession* client)
 {
 	//TODO: lock으로 보호할 것
-	//EnterCriticalSection( &mLock );
+	//세션매니져는 싱글톤으로 되어있고, 여러 스레드에서 접근이 가능하므로 락이 필요하다.
 	FastSpinlockGuard EnterLock( mLock );
 	{
 		mClientList.erase(client->mSocket);
 	}
-	//LeaveCriticalSection( &mLock );
+
+	//세션제거
 	delete client;
 }

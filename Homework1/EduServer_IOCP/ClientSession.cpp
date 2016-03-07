@@ -9,7 +9,9 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 {
 	//Question : 왜 LOCK?? 
 	//TODO: 이 영역 lock으로 보호 할 것
-	FastSpinlockGuard EnterLock( mLock );
+
+	//local varivable로 LockGauard 변수를 만든다. 이때 spinlock 객체를 통해서 락을 건다.
+	FastSpinlockGuard EnterLock(mLock);
 	CRASH_ASSERT(LThreadType == THREAD_MAIN_ACCEPT);
 
 	/// make socket non-blocking
@@ -48,11 +50,13 @@ void ClientSession::Disconnect(DisconnectReason dr)
 {
 	//TODO: 이 영역 lock으로 보호할 것
 	//Question : 왜 LOCK?? 
-	//EnterCriticalSection( &mLock );
+
+	//아래애 보면 GSessionManager에 접근하고 있다. 이는 싱글톤으로써 글로벌하게 다른 스레드에서도 접근이 가능하다. 따라서 lock을 걸어주어야 한다.
 	FastSpinlockGuard EnterLock( mLock );
 	if ( !IsConnected() )
 		return ;
 	
+	//lingerOption을 통하여, send buffer에 데이터가 남아있더라도 바로 종료.
 	LINGER lingerOption ;
 	lingerOption.l_onoff = 1;
 	lingerOption.l_linger = 0;
@@ -70,7 +74,6 @@ void ClientSession::Disconnect(DisconnectReason dr)
 	closesocket(mSocket) ;
 
 	mConnected = false ;
-	//LeaveCriticalSection( &mLock );
 }
 
 bool ClientSession::PostRecv() const

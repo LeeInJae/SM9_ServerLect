@@ -23,7 +23,7 @@ bool IocpManager::Initialize()
 	//TODO: mIoThreadCount = ...;GetSystemInfo사용해서 set num of I/O threads
 	SYSTEM_INFO SystemInfo;
 	GetSystemInfo(&SystemInfo);
-	mIoThreadCount = SystemInfo.dwNumberOfProcessors;
+	mIoThreadCount = SystemInfo.dwNumberOfProcessors * 2; //core 수의 2배 만큼 worker thread 수 설정( 이유는 ? )
 
 	/// winsock initializing
 	WSADATA wsa;
@@ -126,16 +126,16 @@ void IocpManager::Finalize()
 
 unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 {
-	LThreadType = THREAD_IO_WORKER;
+	LThreadType				= THREAD_IO_WORKER;
 
-	LIoThreadId = reinterpret_cast<int>(lpParam);
-	HANDLE hCompletionPort = GIocpManager->GetComletionPort();
+	LIoThreadId				= reinterpret_cast<int>(lpParam);
+	HANDLE hCompletionPort	= GIocpManager->GetComletionPort();
 	
 	while (true)
 	{
-		DWORD dwTransferred = 0;
-		OverlappedIOContext* context = nullptr;
-		ClientSession* asCompletionKey = nullptr;
+		DWORD dwTransferred				= 0;
+		OverlappedIOContext* context	= nullptr;
+		ClientSession* asCompletionKey	= nullptr;
 
 		int ret = GetQueuedCompletionStatus(hCompletionPort, &dwTransferred, (ULONG_PTR*)&asCompletionKey, (LPOVERLAPPED*)&context, GQCS_TIMEOUT)  ; ///<여기에는 GetQueuedCompletionStatus(hComletionPort, ..., GQCS_TIMEOUT)를 수행한 결과값을 대입
 
@@ -192,6 +192,7 @@ bool IocpManager::ReceiveCompletion(const ClientSession* client, OverlappedIOCon
 	if (client != nullptr && context != nullptr)
 		client->PostSend( context->mWsaBuf.buf , dwTransferred );
 
+	//새로운 I/O 작업시 overlapoped를 동적 생성하므로 여기서 지워줘야한다.
 	delete context;
 
 	return client->PostRecv();
@@ -205,6 +206,7 @@ bool IocpManager::SendCompletion(const ClientSession* client, OverlappedIOContex
 		return false;
 	}
 	
+	//새로운 I/O 작업시 overlapoped를 동적 생성하므로 여기서 지워줘야한다.
 	delete context;
 	return true;
 }
