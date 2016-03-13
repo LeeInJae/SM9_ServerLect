@@ -30,8 +30,8 @@ void ClientSession::SessionReset()
 	mBuffer.BufferReset();
 
 	LINGER lingerOption;
-	lingerOption.l_onoff = 1;
-	lingerOption.l_linger = 0;
+	lingerOption.l_onoff	= 1;
+	lingerOption.l_linger	= 0;
 
 	/// no TCP TIME_WAIT
 	if (SOCKET_ERROR == setsockopt(mSocket, SOL_SOCKET, SO_LINGER, (char*)&lingerOption, sizeof(LINGER)))
@@ -50,7 +50,15 @@ bool ClientSession::PostAccept()
 	OverlappedAcceptContext* acceptContext = new OverlappedAcceptContext(this);
 
 	//TODO : AccpetEx를 이용한 구현.
-//	AcceptEx( )
+	/////////////////////////////////////////////////////
+	DWORD dwBytes;
+	if (CustomAcceptEx(*GIocpManager->GetListenSocket(), mSocket, nullptr, 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytes, &(acceptContext->mOverlapped)) == false)
+	{
+		return false;
+	}
+
+	/////////////////////////////////////////////////////
+	
 	return true;
 }
 
@@ -139,22 +147,9 @@ void ClientSession::DisconnectRequest(DisconnectReason dr)
 
 	//TODO: DisconnectEx를 이용한 연결 끊기 요청
 	////////////////////////////////////////////////
-	LPFN_DISCONNECTEX	lpfnDisconnectEx	= nullptr;
-	GUID				GuidDisconnectEx	= WSAID_DISCONNECTEX;
-	DWORD				DisconnectExDwBytes = 0;
-	if ( WSAIoctl( mSocket , SIO_GET_EXTENSION_FUNCTION_POINTER , &GuidDisconnectEx , sizeof( GuidDisconnectEx ) , lpfnDisconnectEx , sizeof( lpfnDisconnectEx ) , &DisconnectExDwBytes , NULL , NULL ) != 0 )
+	if ( DisconnectEx( mSocket , &( context->mOverlapped ) , TF_REUSE_SOCKET , 0 ) == false )
 	{
-		//Get DisconnectEx Pointer failed
 		return;
-	}
-	if ( lpfnDisconnectEx( mSocket , &( context->mOverlapped ) , TF_REUSE_SOCKET , 0 ) == false )
-	{
-		int err = WSAGetLastError( );
-		if ( err != ERROR_IO_PENDING )
-		{
-			//DisconnectEx error
-			return;
-		}
 	}
 	////////////////////////////////////////////////
 }
@@ -176,8 +171,19 @@ bool ClientSession::PreRecv()
 	OverlappedPreRecvContext* recvContext = new OverlappedPreRecvContext(this);
 
 	//TODO: zero-byte recv 구현
-
-
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	recvContext->mWsaBuf.len = 0;
+	DWORD RecvedBytes, RecvedFlag;
+	if (WSARecv(mSocket, &(recvContext->mWsaBuf), 1, &RecvedBytes, &RecvedFlag, &(recvContext->mOverlapped), NULL) != 0)
+	{
+		int err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
+		{
+			//WSARecv Error
+			return false;
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return true;
 }
 
@@ -234,7 +240,7 @@ bool ClientSession::PostSend()
 	OverlappedSendContext* sendContext = new OverlappedSendContext(this);
 
 	DWORD sendbytes = 0;
-	DWORD flags = 0;
+	DWORD flags		= 0;
 	sendContext->mWsaBuf.len = (ULONG) mBuffer.GetContiguiousBytes(); 
 	sendContext->mWsaBuf.buf = mBuffer.GetBufferStart();
 

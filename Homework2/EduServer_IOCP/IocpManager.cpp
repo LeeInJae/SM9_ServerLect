@@ -7,25 +7,51 @@
 
 #define GQCS_TIMEOUT	INFINITE //20
 
-__declspec(thread) int LIoThreadId = 0;
-IocpManager* GIocpManager = nullptr;
-
+__declspec(thread) int	LIoThreadId		= 0;
+IocpManager*			GIocpManager	= nullptr;
 
 //TODO AcceptEx DisconnectEx 함수 사용할 수 있도록 구현.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL DisconnectEx( SOCKET hSocket , LPOVERLAPPED lpOverlapped , DWORD dwFlags , DWORD reserved )
 {
-	//return ...
-	return 0;
+	if (DisconnectExFunctionPtr != nullptr)
+	{
+		if (DisconnectExFunctionPtr(hSocket, lpOverlapped, dwFlags, reserved) == false)
+		{
+			int err = WSAGetLastError();
+			if (err != ERROR_IO_PENDING)
+			{
+				//DisconnectEx error
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // 참고: 최신 버전의 Windows SDK에서는 그냥 구현되어 있음
-/*
-BOOL AcceptEx( SOCKET sListenSocket , SOCKET sAcceptSocket , PVOID lpOutputBuffer , DWORD dwReceiveDataLength ,
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BOOL CustomAcceptEx( SOCKET sListenSocket , SOCKET sAcceptSocket , PVOID lpOutputBuffer , DWORD dwReceiveDataLength ,
 	DWORD dwLocalAddressLength , DWORD dwRemoteAddressLength , LPDWORD lpdwBytesReceived , LPOVERLAPPED lpOverlapped )
 {
-	return 0;
+	if (AcceptExFunctionPtr != nullptr)
+	{
+		if (AcceptExFunctionPtr(sListenSocket, sAcceptSocket, lpOutputBuffer, dwReceiveDataLength, dwLocalAddressLength, dwRemoteAddressLength, lpdwBytesReceived, lpOverlapped) == false)
+		{
+			int err = WSAGetLastError();
+			if (err != ERROR_IO_PENDING)
+			{
+				//AcceptEx Error
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
 }
-*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IocpManager::IocpManager() : mCompletionPort(NULL), mIoThreadCount(2), mListenSocket(NULL)
 {	
@@ -41,7 +67,7 @@ bool IocpManager::Initialize()
 	/// set num of I/O threads
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
-	mIoThreadCount = si.dwNumberOfProcessors * 2;
+	mIoThreadCount = si.dwNumberOfProcessors * 2;//Question core * 2 만큼 있어야 되지 않나?
 
 	/// winsock initializing
 	WSADATA wsa;
@@ -80,20 +106,20 @@ bool IocpManager::Initialize()
 
 	//TODO : WSAIoctl을 이용하여 AcceptEx, DisconnectEx 함수 사용가능하도록 하는 작업..
 	/////////////////////////////////////////////////////////////////////////////////
-	//LPFN_ACCEPTEX	lpfnAcceptEx = nullptr;
-	/*
-	GUID			GuidAcceptEx = WSAID_ACCEPTEX;
+	//Question : WSAIoctl을 통한 함수 로드시, 소켓파라미터에는 무엇을 넣어주어야하는건가 acceptEx는 listen socket을 넣는다고 쳐도, disconnectEx는 ?
+	//			그냥 함수로드의 목적이라면, 아무 소켓이라도 상관은 없나?(일단 NULL은 안됨)
+	GUID			GuidAcceptEx	= WSAID_ACCEPTEX;
 	DWORD			AcceptExDwBytes = 0;
-	if ( WSAIoctl( mListenSocket , SIO_GET_EXTENSION_FUNCTION_POINTER , &GuidAcceptEx , sizeof( GuidAcceptEx ) , &::AcceptEx , sizeof( &::AcceptEx ) , &AcceptExDwBytes , NULL , NULL ) != 0 )
+
+	if (WSAIoctl(mListenSocket, SIO_GET_EXTENSION_FUNCTION_POINTER, &GuidAcceptEx, sizeof(GuidAcceptEx), &AcceptExFunctionPtr, sizeof(AcceptExFunctionPtr), &AcceptExDwBytes, NULL, NULL) != 0)
 	{
 		//Get AcceptEx Pointer failed
 		return false;
 	}
-	*/
-	//LPFN_DISCONNECTEX	lpfnDisconnectEx	= nullptr;
+	
 	GUID				GuidDisconnectEx	= WSAID_DISCONNECTEX;
 	DWORD				DisconnectExDwBytes = 0;
-	if ( WSAIoctl( mListenSocket , SIO_GET_EXTENSION_FUNCTION_POINTER , &GuidDisconnectEx , sizeof( GuidDisconnectEx ) , ( &::DisconnectEx ) , sizeof( &::DisconnectEx ) , &DisconnectExDwBytes , NULL , NULL ) != 0 )
+	if (WSAIoctl(mListenSocket, SIO_GET_EXTENSION_FUNCTION_POINTER, &GuidDisconnectEx, sizeof(GuidDisconnectEx), &DisconnectExFunctionPtr, sizeof(DisconnectExFunctionPtr), &DisconnectExDwBytes, NULL, NULL) != 0)
 	{
 		//Get DisconnectEx Pointer failed
 		return false;
@@ -179,6 +205,12 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 			}
 			////////////////////////////////////////////////
 
+			///////////////////////////
+			if (context == nullptr)
+			{
+				return false;
+			}
+			///////////////////////////
 			if (context->mIoType == IO_RECV || context->mIoType == IO_SEND )
 			{
 				CRASH_ASSERT(nullptr != theClient);

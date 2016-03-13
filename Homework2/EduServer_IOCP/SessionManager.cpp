@@ -54,9 +54,20 @@ bool SessionManager::AcceptSessions()
 		//TODO mFreeSessionList에서 ClientSession* 꺼내서 PostAccept() 해주기.. (위의 ReturnClientSession와 뭔가 반대로 하면 될 듯?)
 		// AddRef()도 당연히 해줘야 하고...
 
+	
 		// 실패시 false
 		//if (false == newClient->PostAccept())
 		//	return false;
+		////////////////////////////////////////////////////////////
+		ClientSession * newClient = mFreeSessionList.back();
+		if (newClient->PostAccept() == false)
+		{
+			return false;
+		}
+		newClient->AddRef();
+		++mCurrentIssueCount;
+		mFreeSessionList.pop_back();
+		////////////////////////////////////////////////////////////
 	}
 
 
