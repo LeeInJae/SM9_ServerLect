@@ -51,9 +51,13 @@ bool ClientSession::PostAccept()
 
 	//TODO : AccpetEx를 이용한 구현.
 	/////////////////////////////////////////////////////
-	DWORD dwBytes;
-	if (CustomAcceptEx(*GIocpManager->GetListenSocket(), mSocket, nullptr, 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytes, &(acceptContext->mOverlapped)) == false)
+	DWORD	dwBytes				= 0;
+	acceptContext->mWsaBuf.buf	= nullptr;
+	acceptContext->mWsaBuf.len	= 0;
+	char	dummyBuff[1024];
+	if (CustomAcceptEx(*GIocpManager->GetListenSocket(), mSocket, dummyBuff, 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytes, &(acceptContext->mOverlapped)) == false)
 	{
+		DeleteIoContext(acceptContext);
 		return false;
 	}
 
@@ -110,12 +114,12 @@ void ClientSession::AcceptCompletion()
 		//TODO: CreateIoCompletionPort를 이용한 소켓 연결
 		//HANDLE handle = CreateIoCompletionPort(...);
 		//////////////////////////////////////////////////
-		OverlappedAcceptContext* AcceptContext = new OverlappedAcceptContext( this );
-		HANDLE handle = CreateIoCompletionPort( (HANDLE)mSocket , GIocpManager->GetComletionPort( ) , ( ULONG_PTR ) AcceptContext , NULL );
-		if ( handle == NULL )
+		HANDLE handle = CreateIoCompletionPort( (HANDLE)mSocket , GIocpManager->GetComletionPort( ) , ( ULONG_PTR ) this, NULL );
+		if ( handle == NULL || handle != GIocpManager->GetComletionPort() )
 		{
 			//connect CP with Socket fail
-			return;
+			resultOk = false;
+			break;
 		}
 		//////////////////////////////////////////////////
 
@@ -147,9 +151,9 @@ void ClientSession::DisconnectRequest(DisconnectReason dr)
 
 	//TODO: DisconnectEx를 이용한 연결 끊기 요청
 	////////////////////////////////////////////////
-	if ( DisconnectEx( mSocket , &( context->mOverlapped ) , TF_REUSE_SOCKET , 0 ) == false )
+	if (DisconnectEx(mSocket, &(context->mOverlapped), TF_REUSE_SOCKET, 0) == false)
 	{
-		return;
+		DeleteIoContext(context);
 	}
 	////////////////////////////////////////////////
 }
@@ -172,13 +176,15 @@ bool ClientSession::PreRecv()
 
 	//TODO: zero-byte recv 구현
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	recvContext->mWsaBuf.buf = nullptr;
 	recvContext->mWsaBuf.len = 0;
-	DWORD RecvedBytes, RecvedFlag;
-	if (WSARecv(mSocket, &(recvContext->mWsaBuf), 1, &RecvedBytes, &RecvedFlag, &(recvContext->mOverlapped), NULL) != 0)
+	DWORD RecvedBytes = 0, RecvedFlag = 0;
+	if (WSARecv(mSocket, &(recvContext->mWsaBuf), 1, &RecvedBytes, &RecvedFlag, &(recvContext->mOverlapped), NULL) == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
 		if (err != WSA_IO_PENDING)
 		{
+			DeleteIoContext(recvContext);
 			//WSARecv Error
 			return false;
 		}

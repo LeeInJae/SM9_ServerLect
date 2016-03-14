@@ -60,13 +60,15 @@ bool SessionManager::AcceptSessions()
 		//	return false;
 		////////////////////////////////////////////////////////////
 		ClientSession * newClient = mFreeSessionList.back();
+		mFreeSessionList.pop_back();
+		++mCurrentIssueCount;
+		newClient->AddRef();
+
 		if (newClient->PostAccept() == false)
 		{
 			return false;
 		}
-		newClient->AddRef();
-		++mCurrentIssueCount;
-		mFreeSessionList.pop_back();
+		
 		////////////////////////////////////////////////////////////
 	}
 

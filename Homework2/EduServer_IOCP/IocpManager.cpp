@@ -97,9 +97,9 @@ bool IocpManager::Initialize()
 	/// bind
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port = htons(LISTEN_PORT);
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_family		= AF_INET;
+	serveraddr.sin_port			= htons(LISTEN_PORT);
+	serveraddr.sin_addr.s_addr	= htonl(INADDR_ANY);
 
 	if (SOCKET_ERROR == bind(mListenSocket, (SOCKADDR*)&serveraddr, sizeof(serveraddr)))
 		return false;
@@ -110,7 +110,6 @@ bool IocpManager::Initialize()
 	//			그냥 함수로드의 목적이라면, 아무 소켓이라도 상관은 없나?(일단 NULL은 안됨)
 	GUID			GuidAcceptEx	= WSAID_ACCEPTEX;
 	DWORD			AcceptExDwBytes = 0;
-
 	if (WSAIoctl(mListenSocket, SIO_GET_EXTENSION_FUNCTION_POINTER, &GuidAcceptEx, sizeof(GuidAcceptEx), &AcceptExFunctionPtr, sizeof(AcceptExFunctionPtr), &AcceptExDwBytes, NULL, NULL) != 0)
 	{
 		//Get AcceptEx Pointer failed
@@ -181,7 +180,8 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 	LIoThreadId				= reinterpret_cast<int>(lpParam);
 	
 	HANDLE hComletionPort	= GIocpManager->GetComletionPort();
-
+	
+	
 	while (true)
 	{
 		DWORD					dwTransferred		= 0;
@@ -208,7 +208,7 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 			///////////////////////////
 			if (context == nullptr)
 			{
-				return false;
+				continue;
 			}
 			///////////////////////////
 			if (context->mIoType == IO_RECV || context->mIoType == IO_SEND )
@@ -271,7 +271,7 @@ unsigned int WINAPI IocpManager::IoWorkerThread(LPVOID lpParam)
 bool IocpManager::PreReceiveCompletion(ClientSession* client, OverlappedPreRecvContext* context, DWORD dwTransferred)
 {
 	/// real receive...
-	return client->PreRecv();
+	return client->PostRecv();
 }
 
 bool IocpManager::ReceiveCompletion(ClientSession* client, OverlappedRecvContext* context, DWORD dwTransferred)
