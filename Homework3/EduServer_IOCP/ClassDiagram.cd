@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CircularBuffer" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQBAEQEACQAgACAIAAABIAASAAAAIAAAAAAIAAgGAA=</HashCode>
+      <FileName>CircularBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FastSpinlock" Collapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEEgAAAAQAAAAAAAAAAAAAAAkAAAAAAA=</HashCode>
+      <FileName>FastSpinlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FastSpinlockGuard" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAACAAAAAAAAABAAAA=</HashCode>
+      <FileName>FastSpinlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClassTypeLock&lt;TargetClass&gt;" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>FastSpinlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SmallSizeMemoryPool" Collapsed="true">
+    <Position X="13.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAIAAAAAAAAAAAAAAAAACAAAAAAAAAAgAgCAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MemoryPool" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAEAAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectPool&lt;TOBJECT, ALLOC_COUNT&gt;" Collapsed="true">
+    <Position X="17.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACACAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAgAAA=</HashCode>
+      <FileName>ObjectPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="STLAllocator&lt;T&gt;" Collapsed="true">
+    <Position X="15.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAEAAAAAAAAIAAAEAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClientSession" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAEAACABFCDAABAAAQAADCAMAAGAIAQAABAgABA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IocpManager" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACACABAAACQQAAYAAAECEAAAkgAABAQQAAAAAAQA=</HashCode>
+      <FileName>IocpManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SessionManager" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAEAAIIAAAACEAEAAAAAAADAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SessionManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="MemAllocInfo" Collapsed="true">
+    <Position X="12" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PooledAllocatable" Collapsed="true">
+    <Position X="13.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xvector&lt;T&gt;" Collapsed="true">
+    <Position X="13.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xdeque&lt;T&gt;" Collapsed="true">
+    <Position X="15.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xlist&lt;T&gt;" Collapsed="true">
+    <Position X="13.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xmap&lt;K, T, C&gt;" Collapsed="true">
+    <Position X="15.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xset&lt;T, C&gt;" Collapsed="true">
+    <Position X="12" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xhash_map&lt;K, T, C&gt;" Collapsed="true">
+    <Position X="17.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xhash_set&lt;T, C&gt;" Collapsed="true">
+    <Position X="12" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="xpriority_queue&lt;T, C&gt;" Collapsed="true">
+    <Position X="17.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedIOContext" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIEgAAAAAAAAAAAAAAAAAAABAAAAAgAAAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedSendContext" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedRecvContext" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedPreRecvContext" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedDisconnectContext" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="OverlappedAcceptContext" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="xstring" Collapsed="true">
+    <Position X="12" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XTL.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="IOType" Collapsed="true">
+    <Position X="13.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAACAAAEAAAAAAAAAAAAAgAAAAAAAAAAAABAAAgAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DisconnectReason" Collapsed="true">
+    <Position X="12" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAABAAAkAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>ClientSession.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="THREAD_TYPE" Collapsed="true">
+    <Position X="15.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>EduServer_IOCP.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Malgun Gothic" Size="9" />
+</ClassDiagram>
