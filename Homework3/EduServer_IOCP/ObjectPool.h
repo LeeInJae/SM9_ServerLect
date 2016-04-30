@@ -6,15 +6,16 @@
 
 
 template <class TOBJECT, int ALLOC_COUNT = 100>
-class ObjectPool
+class ObjectPool : public ClassTypeLock<TOBJECT>
 {
 public:
 
 	static void* operator new(size_t objSize)
 	{
 		//TODO: TOBJECT 타입 단위로 lock 잠금
+		ClassTypeLock<TOBJECT>::LockGuard lock;
 
-		if (!mFreeList)
+		if (mFreeList == nullptr)
 		{
 			mFreeList = new uint8_t[sizeof(TOBJECT)*ALLOC_COUNT];
 
@@ -28,20 +29,26 @@ public:
 				*ppCurr = pNext;
 				ppCurr = reinterpret_cast<uint8_t**>(pNext);
 			}
-
+			*ppCurr = nullptr;
 			mTotalAllocCount += ALLOC_COUNT;
 		}
 
+		
 		uint8_t* pAvailable = mFreeList;
 		mFreeList = *reinterpret_cast<uint8_t**>(pAvailable);
 		++mCurrentUseCount;
-
+		if (mCurrentUseCount > mTotalAllocCount)
+		{
+			mFreeList = nullptr;
+		}
+		
 		return pAvailable;
 	}
 
 	static void	operator delete(void* obj)
 	{
 		//TODO: TOBJECT 타입 단위로 lock 잠금
+		ClassTypeLock<TOBJECT>::LockGuard lock;
 
 		CRASH_ASSERT(mCurrentUseCount > 0);
 

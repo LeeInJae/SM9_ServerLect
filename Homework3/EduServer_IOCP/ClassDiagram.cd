@@ -56,13 +56,6 @@
       <FileName>XTL.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ClientSession" Collapsed="true">
-    <Position X="15.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAABAAEAACABFCDAABAAAQAADCAMAAGAIAQAABAgABA=</HashCode>
-      <FileName>ClientSession.h</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="IocpManager" Collapsed="true">
     <Position X="13.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
@@ -75,6 +68,13 @@
     <TypeIdentifier>
       <HashCode>AgAAAAAAEAAIIAAAACEAEAAAAAAADAAAAAAAAAAAAAA=</HashCode>
       <FileName>SessionManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClientSession" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAEAACABFCDAABAAAQAADCAMAAGAIAQAABAgABA=</HashCode>
+      <FileName>ClientSession.h</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="MemAllocInfo" Collapsed="true">

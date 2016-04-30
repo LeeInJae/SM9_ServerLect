@@ -53,7 +53,7 @@ bool ClientSession::PostAccept()
 	acceptContext->mWsaBuf.len = 0;
 	acceptContext->mWsaBuf.buf = nullptr;
 
-	if (FALSE == AcceptEx(*GIocpManager->GetListenSocket(), mSocket, GIocpManager->mAcceptBuf, 0,
+	if (FALSE == CustomAcceptEx(*GIocpManager->GetListenSocket(), mSocket, GIocpManager->mAcceptBuf, 0,
 		sizeof(SOCKADDR_IN)+16, sizeof(SOCKADDR_IN)+16, &bytes, (LPOVERLAPPED)acceptContext))
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
@@ -243,6 +243,7 @@ bool ClientSession::PostSend()
 		return true;
 
 	OverlappedSendContext* sendContext = new OverlappedSendContext(this);
+	//OverlappedSendContext* sendContext = reinterpret_cast<OverlappedSendContext*>(ObjectPool<OverlappedSendContext, 1>::operator new(sizeof(OverlappedSendContext)));
 
 	DWORD sendbytes = 0;
 	DWORD flags = 0;

@@ -1,5 +1,5 @@
 #pragma once
-#include <time.h>
+
 
 
 /// 커스텀하게 힙에서 할당 받는 애들은 전부 메모리 정보 붙여주기
@@ -99,11 +99,10 @@ void xdelete(T* object)
 
 	//TODO: object의 소멸자 불러주고 메모리풀에 반납.
 	object->~T( );
-	DetachMemAllocInfo( object );
 	//Question . 어떤 오브젝트였는지에대한 정보를 extrainfo로 보내주면 좋을듯한데...음... 그러면 enum값이 낫지 않을까?
 	//			 할당시간을 보내줘도 좋지않을까? 언제 생성되었는지에 대한...
 	
-	time_t time_sec;
-	localtime( &time_sec );
-	GMemoryPool->Deallocate(reinterpret_cast<void*>(object),  time_sec);
+	//time_t time_sec;
+	//localtime( &time_sec );
+	GMemoryPool->Deallocate(object,  sizeof(T));
 }
