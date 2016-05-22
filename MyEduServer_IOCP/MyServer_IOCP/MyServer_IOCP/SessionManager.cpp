@@ -1,11 +1,27 @@
 #include "stdafx.h"
+#include "ClientSession.h"
 #include "SessionManager.h"
 
 SessionManager* GSessionManager = nullptr;
-SessionManager::SessionManager( )
+
+
+ClientSession* SessionManager::CreateClientSession( SOCKET InStreamSock )
 {
+	ClientSession* ClientSessionObject = new ClientSession( InStreamSock );
+	//todo : lock
+	mClientList.insert(ClientList::value_type( InStreamSock , ClientSessionObject ));
+
+	return ClientSessionObject;
 }
 
+void SessionManager::DeleteClientSession( ClientSession* InClientSession )
+{
+	//todo : lock
+	mClientList.erase( InClientSession->GetStreamSocket( ) );
+
+	delete InClientSession;
+	InClientSession = nullptr;
+}
 
 SessionManager::~SessionManager( )
 {
