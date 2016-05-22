@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{6765be10-1416-4e84-ba8c-41e3c57c30c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Utils">
+      <UniqueIdentifier>{db7d9ae7-6894-4f8f-966d-2658e996ac14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,6 +30,21 @@
     <ClInclude Include="targetver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="IOCPManager.h">
+      <Filter>소스 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
+      <Filter>소스 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSession.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MyServer_IOCP.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>소스 파일\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -31,6 +52,18 @@
     </ClCompile>
     <ClCompile Include="MyServer_IOCP.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSession.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>소스 파일\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
