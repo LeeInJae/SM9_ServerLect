@@ -20,6 +20,7 @@ enum class EDisconnectReason : int
 };
 
 class ClientSession;
+class FastSpinLock;
 
 struct OverlappedIOContext
 {
@@ -70,5 +71,6 @@ private:
 	SOCKADDR_IN		mClientAddr;
 
 	//todo : lock.
+	FastSpinLock	mLock;
 };
 

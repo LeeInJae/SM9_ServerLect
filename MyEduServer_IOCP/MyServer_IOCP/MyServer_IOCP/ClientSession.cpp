@@ -22,7 +22,7 @@ bool ClientSession::OnConnect( SOCKADDR_IN* Addr )
 	CRASH_ASSERT( LThreadType == EThreadType::THREAD_MAIN_ACCEPT );
 
 	//TODO: 이 영역 lock으로 보호 할 것
-	
+	FastSpinLockGuard EnterLock( mLock );
 	//nonblocking socket
 	u_long Enabled = 1;
 	if( ioctlsocket( mStreamSocket , FIONBIO , &Enabled ) == SOCKET_ERROR)
@@ -66,6 +66,8 @@ bool ClientSession::OnConnect( SOCKADDR_IN* Addr )
 void ClientSession::OnDisconnect( EDisconnectReason InReason )
 {
 	//todo : lock!
+	FastSpinLockGuard EnterLock( mLock );
+
 	if(mConnected == false)
 		return;
 

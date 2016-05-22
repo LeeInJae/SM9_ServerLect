@@ -1,9 +1,11 @@
 #pragma once
 
 #include <map>
+#include "FastSpinLock.h"
 #include <winsock2.h>
 
 class ClientSession;
+class FastSpinLock;
 
 class SessionManager
 {
@@ -24,6 +26,7 @@ private:
 	ClientList mClientList;
 
 	//todo : lock 선언( 매니저단은 여러스레드에서 접근한다! , 반드시 락으로 동기화 해주어야한다)
+	FastSpinLock	mLock;
 	volatile long mConnectionCount = 0;
 };
 

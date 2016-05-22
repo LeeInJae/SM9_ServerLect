@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FastSpinLock.h"
 #include "ClientSession.h"
 #include "SessionManager.h"
 
@@ -9,6 +10,7 @@ ClientSession* SessionManager::CreateClientSession( SOCKET InStreamSock )
 {
 	ClientSession* ClientSessionObject = new ClientSession( InStreamSock );
 	//todo : lock
+	FastSpinLockGuard EnterLock( mLock );
 	mClientList.insert(ClientList::value_type( InStreamSock , ClientSessionObject ));
 
 	return ClientSessionObject;
@@ -17,6 +19,7 @@ ClientSession* SessionManager::CreateClientSession( SOCKET InStreamSock )
 void SessionManager::DeleteClientSession( ClientSession* InClientSession )
 {
 	//todo : lock
+	FastSpinLockGuard EnterLock( mLock );
 	mClientList.erase( InClientSession->GetStreamSocket( ) );
 
 	delete InClientSession;

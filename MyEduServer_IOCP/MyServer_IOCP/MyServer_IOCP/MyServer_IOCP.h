@@ -1,5 +1,5 @@
 #pragma once
-#define SERVER_ADDRESS L"127.0.0.1:3001"
+#define SERVER_ADDRESS L"127.0.0.1:9001"
 
 enum class EThreadType : int
 {
