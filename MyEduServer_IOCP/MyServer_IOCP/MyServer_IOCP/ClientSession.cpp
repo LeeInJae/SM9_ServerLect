@@ -56,7 +56,11 @@ bool ClientSession::OnConnect( SOCKADDR_IN* Addr )
 	memcpy( &mClientAddr , Addr , sizeof( SOCKADDR_IN ) );
 	mConnected = true;
 
-	//printf_s( "Client Connected !!!!!!!!!!!!!!!!  : IP : %s, PORT = %d \n" , inet_ntoa( mClientAddr.sin_addr ) , ntohs( mClientAddr.sin_port ) );
+	
+	CHAR AddrStr[ 30 ];
+	int SizeAddrStr = sizeof( AddrStr );
+	inet_ntop( AF_INET , ( void* )&mClientAddr.sin_addr , AddrStr , SizeAddrStr );
+	printf_s( "Client Connected !!!!!!!!!!!!!!!!  : IP : %s, PORT = %d \n" , AddrStr , ntohs( mClientAddr.sin_port ) );
 
 	GSessionManager->IncreaseConnectionCount( );
 

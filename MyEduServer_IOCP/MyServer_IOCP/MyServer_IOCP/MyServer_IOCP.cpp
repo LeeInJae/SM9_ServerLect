@@ -16,7 +16,24 @@ int main()
 	//Global Manager
 	GSessionManager		= new SessionManager;
 	GIOCPManager		= new IOCPManager;
+	
 
+	if(GIOCPManager->Initialize( ) == false)
+		return -1;
+
+	if(GIOCPManager->StartIoThreads( ) == false)
+		return -1;
+	
+	printf( "Start Server\n" );
+
+	if(GIOCPManager->StartAcceptLoop( ) == false)
+		return -1;
+
+	
+	GIOCPManager->Finalize( );
+
+	delete GIOCPManager;
+	delete GSessionManager;
 
     return 0;
 }
