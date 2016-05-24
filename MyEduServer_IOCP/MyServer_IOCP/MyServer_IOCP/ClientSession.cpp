@@ -77,8 +77,8 @@ void ClientSession::OnDisconnect( EDisconnectReason InReason )
 
 	//linger option
 	LINGER LingerOption;
-	LingerOption.l_linger = 1;
-	LingerOption.l_onoff = 0;
+	LingerOption.l_linger = 0;
+	LingerOption.l_onoff = 1;
 	if(setsockopt( mStreamSocket , SOL_SOCKET , SO_LINGER , ( const char* )&LingerOption , sizeof( LINGER ) ) == SOCKET_ERROR)
 	{
 		printf_s( "Linger Option Error" );

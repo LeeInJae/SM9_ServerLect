@@ -20,9 +20,9 @@ void FastSpinLock::EnterLock( )
 			return;
 
 		UINT uTimerRes = 1;
-	//	timeBeginPeriod( uTimerRes );
+		timeBeginPeriod( uTimerRes );
 		Sleep( ( DWORD )min( 10 , nloops ) );
-	//	timeEndPeriod( uTimerRes );
+		timeEndPeriod( uTimerRes );
 	}
 }
 

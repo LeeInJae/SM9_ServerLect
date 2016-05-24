@@ -154,7 +154,12 @@ unsigned int WINAPI IOCPManager::IOWorkerThread( LPVOID lpParam )
 		{
 			AsCompletionKey->OnDisconnect( EDisconnectReason::DR_RECV_ZERO );
 			GSessionManager->DeleteClientSession( AsCompletionKey );
-			
+			if(IOContext != nullptr)
+			{
+				delete IOContext;
+				IOContext = nullptr;
+			}
+
 			continue;
 		}
 
