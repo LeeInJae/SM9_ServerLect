@@ -25,7 +25,8 @@ void FastSpinlock::EnterWriteLock()
 		/// 다른놈이 writelock 풀어줄때까지 기다린다.
 		while (mLockFlag & LF_WRITE_MASK)
 			YieldProcessor();
-
+		
+		//다른 스레드에서 쓰기락 걸고 있는거냥? 
 		if ((InterlockedAdd(&mLockFlag, LF_WRITE_FLAG) & LF_WRITE_MASK) == LF_WRITE_FLAG)
 		{
 			/// 다른놈이 readlock 풀어줄때까지 기다린다.
@@ -51,6 +52,8 @@ void FastSpinlock::LeaveWriteLock()
 
 void FastSpinlock::EnterReadLock()
 {
+	//cow : 얘네는 ThreadLocal Storage니까 Thread별로 어떤 락을 요구할때 항상 요놈 lock order check를 통해서 한다.
+	//어쩃든 Thread별로 요구하는 Lock을 요구를 할테니깐말이야.. 여러개의 락을 가질때 hieracy를 잘 지켜야겠지/
 	if (mLockOrder != LO_DONT_CARE)
 		LLockOrderChecker->Push(this);
 
@@ -65,6 +68,7 @@ void FastSpinlock::EnterReadLock()
 			//return;
 		// else
 			// mLockFlag 원복
+
 		//cow
 		//{
 		if ( InterlockedIncrement( &mLockFlag) & LF_WRITE_MASK  == 0)

@@ -20,6 +20,7 @@ public:
 		if (InterlockedIncrement64(&mRemainTaskCount) > 1)
 		{
 			//TODO: 이미 누군가 작업중이면 어떻게?
+			//cow : 나중에 작업하라고 task 그냥 queue에 넣어둔다.
 			mCentralTaskQueue.push( task );
 		}
 		else
@@ -36,7 +37,7 @@ public:
 					//TODO: task를 수행하고 mRemainTaskCount를 하나 감소 
 					// mRemainTaskCount가 0이면 break;
 					task( );
-					InterlockedIncrement64( &mRemainTaskCount );
+					InterlockedDecrement64( &mRemainTaskCount );
 					if ( mRemainTaskCount == 0 )
 						break;
 				}

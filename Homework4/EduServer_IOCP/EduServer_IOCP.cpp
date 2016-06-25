@@ -22,11 +22,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	SetUnhandledExceptionFilter(ExceptionFilter);
 
 	/// Global Managers
-	GMemoryPool = new MemoryPool;
-	GSessionManager = new SessionManager;
-	GIocpManager = new IocpManager;
-	GGrandCentralExecuter = new GrandCentralExecuter;
-	GPlayerManager = new PlayerManager;
+	GMemoryPool				= new MemoryPool;
+	GSessionManager			= new SessionManager;
+	GIocpManager			= new IocpManager;
+	GGrandCentralExecuter	= new GrandCentralExecuter;
+	GPlayerManager			= new PlayerManager;
 
 	/// main threadµµ lock order check...
 	LLockOrderChecker = new LockOrderChecker(-1);
@@ -54,4 +54,3 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	return 0;
 }
-
